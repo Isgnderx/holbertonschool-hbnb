@@ -117,3 +117,147 @@ Place "*" --> "*" Amenity : includes
 - associations
 - multiplicity
 ```
+
+## 2. Sequence Diagrams for API Calls
+
+This section presents four sequence diagrams that illustrate how different layers of the HBnB application interact to process API requests.  
+Each diagram shows the communication flow between the **Presentation Layer**, **Business Logic Layer**, and **Persistence Layer**.
+
+---
+
+### 2.1 User Registration
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant API as API Endpoint
+    participant Facade as HBnB Facade
+    participant UserModel as User Model
+    participant Repository as User Repository
+    participant DB as Database
+
+    User->>API: POST /users/register
+    API->>Facade: register_user(user_data)
+    Facade->>UserModel: validate and create user
+    UserModel-->>Facade: user instance
+    Facade->>Repository: save(user)
+    Repository->>DB: INSERT user data
+    DB-->>Repository: success
+    Repository-->>Facade: user saved
+    Facade-->>API: return success response
+    API-->>User: 201 Created
+```
+
+```markdown
+##Explanation
+
+This sequence diagram shows how a new user account is created in the system.
+
+The user sends a registration request to the API.
+The API forwards the request to the facade.
+The facade validates the input and creates a new User object.
+The user data is then saved through the repository into the database.
+Finally, a success response is returned to the client.
+```
+
+### 2.2 Place Creation
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant API as API Endpoint
+    participant Facade as HBnB Facade
+    participant PlaceModel as Place Model
+    participant Repository as Place Repository
+    participant DB as Database
+
+    User->>API: POST /places
+    API->>Facade: create_place(place_data)
+    Facade->>PlaceModel: validate and create place
+    PlaceModel-->>Facade: place instance
+    Facade->>Repository: save(place)
+    Repository->>DB: INSERT place data
+    DB-->>Repository: success
+    Repository-->>Facade: place saved
+    Facade-->>API: return success response
+    API-->>User: 201 Created
+```
+
+```markdown
+##Explanation
+
+This diagram represents the process of creating a new place listing.
+
+The user submits place data through the API.
+The API passes the request to the facade.
+The facade applies business rules and creates a Place object.
+The place is persisted using the repository and stored in the database.
+The API returns a confirmation response.
+```
+
+### 2.3 Review Submission
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant API as API Endpoint
+    participant Facade as HBnB Facade
+    participant ReviewModel as Review Model
+    participant Repository as Review Repository
+    participant DB as Database
+
+    User->>API: POST /reviews
+    API->>Facade: submit_review(review_data)
+    Facade->>ReviewModel: validate and create review
+    ReviewModel-->>Facade: review instance
+    Facade->>Repository: save(review)
+    Repository->>DB: INSERT review data
+    DB-->>Repository: success
+    Repository-->>Facade: review saved
+    Facade-->>API: return success response
+    API-->>User: 201 Created
+```
+
+```markdown
+##Explanation
+
+This sequence diagram shows how a user submits a review for a place.
+
+The user sends review information to the API.
+The API forwards the request to the facade.
+The facade validates the request and creates a Review object.
+The review is stored in the database through the repository.
+A success response is then returned.
+```
+
+### 2.4 Fetching a List of Places
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant API as API Endpoint
+    participant Facade as HBnB Facade
+    participant Repository as Place Repository
+    participant DB as Database
+
+    User->>API: GET /places?filters=criteria
+    API->>Facade: get_places(criteria)
+    Facade->>Repository: find_all(criteria)
+    Repository->>DB: SELECT places by criteria
+    DB-->>Repository: places data
+    Repository-->>Facade: list of places
+    Facade-->>API: formatted results
+    API-->>User: 200 OK with places list
+```
+
+```markdown
+##Explanation
+
+This diagram illustrates how the system retrieves a list of places based on user-defined criteria.
+
+The user sends a request to fetch places.
+The API sends the request to the facade.
+The facade delegates the search to the repository.
+The repository queries the database and returns matching results.
+The response is formatted and sent back to the user.
+```
